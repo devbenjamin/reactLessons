@@ -12,13 +12,22 @@ class App extends Component {
     showPersons: false,
   }
 
-  switchNameHandler = (newName) => {
-    //console.log("was clicked")
-    this.setState({ persons: [
-      {name: newName, age: '47'},
-      {name: 'April', age: '44'},
-      {name: 'Dennis', age: '78'}
-    ]})};
+  // switchNameHandler = (newName) => {
+  //   //console.log("was clicked")
+  //   this.setState({ persons: [
+  //     {name: newName, age: '47'},
+  //     {name: 'April', age: '44'},
+  //     {name: 'Dennis', age: '78'}
+  //   ]})};
+
+  deletePersonHandler = () => {
+    // below returns an array by calling the slice() method. nothing is spliced, so the whole object's key: values are loaded into the array. without slice(), we are using persons as a pointer to the original data in state and changing that, which is not advisable: this is best practices
+    // const persons = this.state.persons
+    // below uses the spread operator to effect the same result as above
+    const persons = [...this.state.persons]
+    persons.splice(persons.index, 1);
+    this.setState({persons:persons})
+  }
 
   nameChangedHandler = (e) => {
     this.setState({ persons: [
@@ -47,16 +56,18 @@ class App extends Component {
     if (this.state.showPersons) {
       persons = (
         <div>
-          {this.state.persons.map(person => {
+
+          {this.state.persons.map((person, index) => {
             return (
-              <Person name={person.name} age={person.age}
-                click={this.switchNameHandler.bind(this)}
+              <Person 
+                name={person.name} 
+                age={person.age}
+                click={this.deletePersonHandler.bind(this, index)}
                 changed={this.nameChangedHandler}
               />
-              
             )
           })}
-          {/* <Person 
+           {/* <Person 
             name={this.state.persons[0].name} 
             age ={this.state.persons[0].age}
             click={this.switchNameHandler.bind(this)}
@@ -71,7 +82,7 @@ class App extends Component {
             name={this.state.persons[2].name} 
             age ={this.state.persons[2].age}
             click={this.switchNameHandler.bind(this)}
-            changed={this.nameChangedHandler}/> */}
+            changed={this.nameChangedHandler}/>  */}
         </div>
       )
     }
@@ -84,7 +95,7 @@ class App extends Component {
         <button 
         style={buttonStyle}
         onClick={() => this.togglePersonsHandler()}>
-        Switch Name</button>
+        Toggle Persons</button>
         {persons}
       </div>
     );
