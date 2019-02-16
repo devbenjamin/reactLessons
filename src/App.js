@@ -5,9 +5,10 @@ import Person from './Person/Person'
 class App extends Component {
   state = {
     persons: [
-      {name: 'Ben', age: '47'},
-      {name: 'April', age: '44'},
-      {name: 'Dennis', age: '78'}
+      //the unique id below is usually provided from the database we we are populating our state with. in this case, i tis some mashed keys to represent a unique id
+      {id: 'sdf', name: 'Ben', age: '47'},
+      {id: 'wer', name: 'April', age: '44'},
+      {id: 'asdf', name: 'Dennis', age: '78'}
     ],
     showPersons: false,
   }
@@ -26,15 +27,26 @@ class App extends Component {
     // below uses the spread operator to effect the same result as above
     const persons = [...this.state.persons]
     persons.splice(persons.index, 1);
+    // below updates the state with the new object, persons. copy from the state, change the copy, then update the state with the copy is best practices
     this.setState({persons:persons})
   }
 
-  nameChangedHandler = (e) => {
-    this.setState({ persons: [
-      {name: e.target.value, age: '47'},
-      {name: e.target.value, age: '44'},
-      {name: e.target.value, age: '78'}
-    ]})};
+  nameChangedHandler = (event, id) => {
+    console.log(this.state.persons)
+    const personIndex = this.state.persons.find(p => {
+      return p.id === id
+    });
+    const person = {
+      ...this.state.persons[personIndex]
+    }
+
+    person.name = event.target.value;
+    console.log(event.target.value)
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState({ persons: persons})
+  }
 
   togglePersonsHandler = () => {
     const doesShow = this.state.showPersons;
@@ -56,14 +68,14 @@ class App extends Component {
     if (this.state.showPersons) {
       persons = (
         <div>
-
           {this.state.persons.map((person, index) => {
             return (
               <Person 
                 name={person.name} 
                 age={person.age}
+                key={person.id}
                 click={this.deletePersonHandler.bind(this, index)}
-                changed={this.nameChangedHandler}
+                changed={(event) => this.nameChangedHandler(event, person.id)}
               />
             )
           })}
